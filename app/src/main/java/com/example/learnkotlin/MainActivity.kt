@@ -46,7 +46,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AffirmationsApp()
+                    //Exercise AffirmationsApp
+//                    AffirmationsApp()
+                    //Exercise Calculation
+                    CalcScreen()
                 }
             }
         }
