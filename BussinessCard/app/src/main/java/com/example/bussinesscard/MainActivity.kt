@@ -1,4 +1,4 @@
-package com.example.bussinesscard
+ package com.example.bussinesscard
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,14 +18,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            BussinessCardTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            CalTipScreen()
         }
     }
 }
