@@ -141,6 +141,6 @@ fun ProductItem(navController: NavController, product: Product) {
 //@Preview(showBackground = true)
 //@Composable
 //fun DefaultPreviewOfDetailScreen() {
-//    val navController = rememberNavController() // Tạo NavController giả để tránh lỗi
+//    val navController = rememberNavController()
 //    ProductListScreen(navController = navController)
 //}
