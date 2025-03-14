@@ -73,7 +73,7 @@ fun ListCoursesScreen(courses: SnapshotStateList<Course?>, navController: NavCon
                     .clickable {
                         item?.id?.let { courseId ->
                             if (courseId.isNotBlank()) {
-                                navController.navigate("detail/$courseId") // ✅ Điều hướng đúng cách
+                                navController.navigate("detail/$courseId")
                             } else {
                                 Log.e("Navigation", "courseId trống hoặc null!")
                             }
@@ -136,10 +136,3 @@ fun deleteData(courseId: String, context: Context, navController: NavController)
         }
         .addOnFailureListener { e -> Toast.makeText(context, "Lỗi: ${e.message}", Toast.LENGTH_SHORT).show() }
 }
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreviewOfCourseScreen() {
-//    val courses = remember { mutableStateListOf<Course?>() }
-//    ListCoursesScreen(courses)
-//}

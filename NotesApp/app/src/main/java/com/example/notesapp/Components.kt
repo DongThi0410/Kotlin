@@ -1,4 +1,4 @@
-package com.example.crudfirebase
+package com.example.notesapp
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -38,75 +38,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.app02.nav.Screen
-import com.example.crudfirebase.ui.theme.Purple40
-import com.example.crudfirebase.ui.theme.PurpleGrey80
+import com.example.notesapp.ui.theme.PurpleGrey80
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CommonScaffold(
-    title: String = "", navController: NavController, content: @Composable (PaddingValues) -> Unit
-) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(title) },
-                navigationIcon = {
-                    IconButton(onClick = {navController.popBackStack()}) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = PurpleGrey80
-                )
-            )
-        },
-        bottomBar = {
-            BottomAppBar {
-                Row(modifier = Modifier.fillMaxWidth()){
-                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = "home"
-                        )
-                    }
-                    Box(modifier = Modifier.weight(1f).clickable { navController.navigate(Screen.SingleImage.route) }, contentAlignment = Alignment.Center) {
-                        Column {
-                        Icon(
-                                imageVector = Icons.Default.Add,
-                        contentDescription = "cart"
-                        )
-                        Text("1 image")
-                        }
-                    }
-                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        Column {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "cart"
-                            )
-                            Text("multiimages")
-                        }
-                    }
-                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        Column {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "cart"
-                            )
-                            Text("1 videp")
-                        }
-                    }
-                }
-            }
-        }
-
-    ) {padding ->
-        content(padding)
-    }
-}
 
 @Composable
 fun MyTextField(
