@@ -1,6 +1,8 @@
 package com.example.giuaky.ui.Screens
 
+import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -9,12 +11,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddPhotoAlternate
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Divider
@@ -28,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -37,52 +43,55 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.example.giuaky.Btn
 import com.example.giuaky.CommonScaffold
-import com.example.giuaky.MyTextField
-import com.example.giuaky.ui.viewModel.NoteViewModel
+import com.example.giuaky.ui.viewModel.addData
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 @Composable
-fun AddNoteScreen(navController: NavController, viewModel: NoteViewModel) {
-    var title by remember { mutableStateOf("") }
-    var content by remember { mutableStateOf("") }
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
-    val context = LocalContext.current
+fun AddNoteScreen(context: Context, navController: NavController) {
+    val title = remember { mutableStateOf("") }
+    val imageUrl = remember { mutableStateOf<String?>(null) }
+    val desc = remember { mutableStateOf("") }
+    val db = Firebase.firestore
 
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         if (uri != null) {
-            imageUri = uri
+            val savedPath = saveImageToInternalStorage(context, uri)
+            if (savedPath != null) {
+                imageUrl.value = savedPath
+
+                val noteData = hashMapOf(
+                    "imageUrl" to savedPath
+                )
+                db.collection("notes")
+                    .add(noteData)
+
+            }
         }
     }
 
     CommonScaffold("Thêm ghi chú", startAction = {
-        IconButton(onClick = {
-            navController.popBackStack()
-        }) {
+        IconButton(onClick = { navController.popBackStack() }) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = ""
             )
         }
     }, actions = {
-        IconButton(onClick = {
-            launcher.launch("image/*")
-        }) {
+        IconButton(onClick = { launcher.launch("image/*") }) {
             Icon(
-                imageVector = Icons.Default.Add,
+                imageVector = Icons.Default.AddPhotoAlternate,
                 contentDescription = "addImage"
             )
         }
         IconButton(onClick = {
-            if (title.isNotEmpty() && content.isNotEmpty()) {
-                val imagePath = imageUri?.let { saveImageToInternalStorage(context, it) } ?: ""
-
-                viewModel.addNote(title, content, imagePath)
-                title = ""; content = ""; imageUri = null
-            }
+            addData(title.value, desc.value, imageUrl.value ?: "", context)
             navController.popBackStack()
         }) {
             Icon(
@@ -100,8 +109,8 @@ fun AddNoteScreen(navController: NavController, viewModel: NoteViewModel) {
         ) {
             TextField(
                 label = { Text("Tiêu đề") },
-                value = title,
-                onValueChange = { title = it },
+                value = title.value,
+                onValueChange = { title.value = it },
                 modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
@@ -109,43 +118,39 @@ fun AddNoteScreen(navController: NavController, viewModel: NoteViewModel) {
                     unfocusedIndicatorColor = Color.Transparent,
                     textColor = Color.Black
                 ),
-                textStyle = TextStyle(
-                    fontSize = 22.sp, fontWeight = FontWeight.Bold, fontStyle = FontStyle.Normal
-                )
+                textStyle = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold)
             )
             Divider(
-                modifier = Modifier.fillMaxWidth().padding(4.dp), color = Color.Gray, thickness = 1.dp
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(4.dp),
+                color = Color.Gray,
+                thickness = 1.dp
             )
             TextField(
                 label = { Text("Nội dung") },
-                value = content,
-                onValueChange = { content = it },
-                modifier = Modifier
-                    .fillMaxWidth(),
+                value = desc.value,
+                onValueChange = { desc.value = it },
+                modifier = Modifier.fillMaxWidth(),
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     textColor = Color.Black
                 ),
-                textStyle = TextStyle(
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontStyle = FontStyle.Normal
-                )
+                textStyle = TextStyle(fontSize = 15.sp, fontWeight = FontWeight.Normal)
             )
 
-            imageUri?.let { uri ->
-                Image(
-                    painter = rememberAsyncImagePainter(uri),
-                    contentDescription = "ảnh đã chọn",
+            imageUrl.value?.let { imgUri ->
+                AsyncImage(
+                    model = imgUri,
+                    contentDescription = null,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(450.dp),
-                    contentScale = ContentScale.Fit
+                        .size(450.dp)
+                        .clip(RoundedCornerShape(4.dp)),
+                    contentScale = ContentScale.Crop
                 )
             }
-
         }
     }
 }

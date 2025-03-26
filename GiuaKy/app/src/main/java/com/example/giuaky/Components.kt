@@ -17,6 +17,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Login
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.ui.graphics.Color
@@ -25,6 +27,8 @@ import androidx.compose.material3.*
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.giuaky.nav.Screen
 import com.example.giuaky.ui.theme.Purple80
@@ -45,13 +50,20 @@ import com.example.giuaky.ui.theme.backgroundGray
 import com.example.giuaky.ui.theme.border
 import com.example.giuaky.ui.theme.btn
 import com.example.giuaky.ui.theme.gray
+import com.example.giuaky.ui.viewModel.AuthViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CommonScaffold(
-    title: String = "", navController: NavController, startAction: @Composable RowScope.() -> Unit = {}, actions: @Composable RowScope.() -> Unit = {}, content: @Composable (PaddingValues) -> Unit
+    title: String = "",
+    navController: NavController,
+    startAction: @Composable RowScope.() -> Unit = {},
+    actions: @Composable RowScope.() -> Unit = {},
+    content: @Composable (PaddingValues) -> Unit
 ) {
+    val authViewmodel: AuthViewModel = viewModel()
+    val isLoggedIn by authViewmodel.isUserLoggedIn.observeAsState(false)
     Scaffold(
         topBar = {
             TopAppBar(
@@ -65,37 +77,55 @@ fun CommonScaffold(
         },
         bottomBar = {
             BottomAppBar {
-                Row(modifier = Modifier.fillMaxWidth()){
-                    Box(modifier = Modifier
-                        .weight(1f)
-                        .clickable { navController.navigate(Screen.Home.route) }, contentAlignment = Alignment.Center) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { navController.navigate(Screen.Home.route) },
+                        contentAlignment = Alignment.Center
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Home,
                             contentDescription = "home"
                         )
                     }
-                    Box(modifier = Modifier
-                        .weight(1f)
-                        .clickable { }, contentAlignment = Alignment.Center) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { }, contentAlignment = Alignment.Center
+                    ) {
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = "add product"
                         )
                     }
-                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                    Box(modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            if (authViewmodel.isUserLoggedIn()) {
+                                authViewmodel.logout()
+                                navController.navigate(Screen.Auth.route)
+                            } else {
+                                navController.navigate(Screen.Auth.route)
+
+                            }
+                        }, contentAlignment = Alignment.Center
+                    ) {
                         Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "account"
+                            imageVector = if (authViewmodel.isUserLoggedIn()) Icons.Default.Logout else Icons.Default.Login,
+                            contentDescription = "logout"
                         )
+
                     }
                 }
             }
         }
 
-    ) {padding ->
+    ) { padding ->
         content(padding)
     }
 }
+
 @Composable
 fun MyTextField(
     labelValue: String, value: String,
@@ -103,7 +133,8 @@ fun MyTextField(
 ) {
     var textValue = remember { mutableStateOf("") }
 
-    OutlinedTextField(value = value,
+    OutlinedTextField(
+        value = value,
         onValueChange = onValueChange,
         label = { Text(text = labelValue) },
         shape = RoundedCornerShape(20.dp),
@@ -119,7 +150,7 @@ fun MyTextField(
             focusedTextColor = Color.Black,
             unfocusedTextColor = Color.Black
         ),
-     )
+    )
     Spacer(modifier = Modifier.height(8.dp))
 
 }
@@ -129,7 +160,7 @@ fun Btn(
     value: String,
     onClick: () -> Unit
 
-    ) {
+) {
     Box(
         modifier = Modifier.fillMaxWidth(0.5f),
         contentAlignment = Alignment.Center
@@ -153,13 +184,14 @@ fun Btn(
                 contentAlignment = Alignment.Center
             ) {
 
-                    Text(value, color = Color.White)
+                Text(value, color = Color.White)
             }
         }
         Spacer(modifier = Modifier.height(8.dp))
 
     }
 }
+
 @Composable
 fun NormalTextComponent(value: String, textAlign: TextAlign = TextAlign.Center) {
 
@@ -172,6 +204,7 @@ fun NormalTextComponent(value: String, textAlign: TextAlign = TextAlign.Center) 
         textAlign = textAlign
     )
 }
+
 @Composable
 fun BoldTextComponent(value: String) {
     Text(
@@ -184,7 +217,7 @@ fun BoldTextComponent(value: String) {
         color = colorResource(id = R.color.white),
         textAlign = TextAlign.Center,
 
-    )
+        )
     Spacer(
         modifier = Modifier.height(2.dp)
     )

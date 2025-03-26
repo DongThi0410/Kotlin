@@ -17,6 +17,7 @@ storage = "1.5.0"
 navigationCompose = "2.8.7"
 firebaseFirestoreKtx = "25.1.2"
 firebaseStorageKtx = "21.0.1"
+materialIconsCore = "1.7.8"
 firebaseAuthKtx = "23.2.0"
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

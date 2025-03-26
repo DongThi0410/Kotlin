@@ -1,40 +1,58 @@
 package com.example.giuaky.ui.viewModel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.content.Context
+import android.widget.Toast
+import androidx.navigation.NavController
 import com.example.giuaky.data.Note
-import com.example.giuaky.repository.NoteRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
+import com.example.giuaky.nav.Screen
+import com.google.firebase.firestore.FirebaseFirestore
 
 
-class NoteViewModel(private val repository: NoteRepository) : ViewModel() {
-    private val _note = MutableStateFlow<List<Note>>(emptyList())
-    val notes: StateFlow<List<Note>> get() = _note
 
-    init {
-        viewModelScope.launch {
-            repository.getAllNotes().collect { _note.value = it }
+    fun updateData(noteId: String, title: String, desc: String, imageUrl: String, context: Context, navController: NavController) {
+        val db = FirebaseFirestore.getInstance()
+        val noteData = mapOf(
+            "title" to title,
+            "desc" to desc,
+            "imagesUrl" to imageUrl
+        )
+
+        db.collection("notes").document(noteId)
+            .update(noteData)
+            .addOnSuccessListener {
+                Toast.makeText(context, "Dax luu", Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(context, "Lỗi: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+fun deleteData(noteId: String, context: Context, navController: NavController) {
+    val db = FirebaseFirestore.getInstance()
+
+    db.collection("notes").document(noteId)
+        .delete()
+        .addOnSuccessListener {
+            navController.navigate(Screen.Home.route)
+            Toast.makeText(context, "Xóa thành công!", Toast.LENGTH_SHORT).show()
         }
-    }
+        .addOnFailureListener { e -> Toast.makeText(context, "Lỗi: ${e.message}", Toast.LENGTH_SHORT).show() }
+}
 
-    fun addNote(title: String,content: String, imageUrl: String) {
-        viewModelScope.launch {
-            repository.insert(Note(title = title,content = content, imageUrl = imageUrl ))
+fun addData(title: String, desc: String, imageUrl: String, context: Context) {
+    val db = FirebaseFirestore.getInstance()
+    val dbNote = db.collection("notes")
+
+    val newNoteRef = dbNote.document() // Tạo document trước để lấy ID
+    val note = Note(id = newNoteRef.id, title = title, imageUrl = imageUrl, desc = desc)
+
+    newNoteRef.set(note)
+        .addOnSuccessListener {
+            Toast.makeText(context, "Thêm thành công", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    fun deleteNote(note: Note) {
-        viewModelScope.launch {
-            repository.delete(note)
+        .addOnFailureListener { e ->
+            Toast.makeText(context, "Lỗi khi thêm khóa học: ${e.message}", Toast.LENGTH_SHORT)
+                .show()
         }
-    }
-    fun update(note: Note) = viewModelScope.launch {
-        repository.update(note)
-    }
-
-    suspend fun getNoteById(id: Int): Note? {
-        return repository.getNoteById(id)
-    }
 }
