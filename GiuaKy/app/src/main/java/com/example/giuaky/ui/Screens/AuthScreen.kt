@@ -141,7 +141,6 @@ fun AuthScreen(navController: NavController, viewModel: AuthViewModel) {
                     message = msg
                     if (success) {
                         Toast.makeText(context, "Dang ky thanh cong", Toast.LENGTH_SHORT).show()
-                        navController.navigate("home")
                     }else
                         Toast.makeText(context, "Email da ton tai", Toast.LENGTH_SHORT).show()
 

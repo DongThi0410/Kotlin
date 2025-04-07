@@ -57,9 +57,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.material)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.firebase.firestore.ktx)
-    implementation(libs.firebase.storage.ktx)
-    implementation(libs.firebase.auth.ktx)
+
     implementation(libs.google.firebase.auth.ktx)
     implementation (libs.play.services.auth)
     implementation(libs.firebase.appcheck.playintegrity)
@@ -78,6 +76,10 @@ dependencies {
     implementation (libs.exoplayer)
     implementation("com.github.bumptech.glide:glide:4.12.0")
     kapt("com.github.bumptech.glide:compiler:4.12.0")
-    implementation("com.google.android.gms:play-services-auth:20.7.0")
+//    implementation("com.google.android.gms:play-services-auth:20.7.0")
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.storage.ktx)
+    implementation(libs.firebase.auth.ktx)
+
 }

@@ -2,6 +2,7 @@ package com.example.giuaky.ui.Screens
 
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -91,15 +92,19 @@ fun DetailNoteScreen(
                 if (savedPath != null) {
                     imageUrl = savedPath
 
-                    val noteData = hashMapOf(
-                        "imageUrl" to savedPath
-                    )
-                    db.collection("notes")
-                        .add(noteData)
-
+                    db.collection("notes").document(noteId)
+                        .update("imageUrl", savedPath)
+                        .addOnSuccessListener {
+                            Log.d("Firebase", "succes")
+                        }
+                        .addOnFailureListener{
+                            e ->
+                            Log.d("Firebase", "Error")
+                        }
                 }
             }
         }
+
 
         CommonScaffold("Ghi chú", startAction = {
             IconButton(onClick = { navController.popBackStack() }) {

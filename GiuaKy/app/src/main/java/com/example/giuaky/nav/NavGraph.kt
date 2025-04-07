@@ -29,7 +29,7 @@ fun AppNavGraph(
         if (authViewmodel.isUserLoggedIn()) Screen.Home.route else Screen.Auth.route
     val notes = remember { mutableStateListOf<Note?>() }
 
-    NavHost(navController = navController, startDestination = startDestination) {
+    NavHost(navController = navController, startDestination = Screen.Home.route) {
         composable(Screen.Auth.route) { AuthScreen(navController, authViewmodel) }
         composable(Screen.Home.route) { HomeScreen(notes, navController, context,) }
         composable(Screen.Add.route) { AddNoteScreen(context, navController) }

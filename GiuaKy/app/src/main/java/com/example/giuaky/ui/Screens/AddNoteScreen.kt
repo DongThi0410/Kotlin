@@ -65,16 +65,10 @@ fun AddNoteScreen(context: Context, navController: NavController) {
             val savedPath = saveImageToInternalStorage(context, uri)
             if (savedPath != null) {
                 imageUrl.value = savedPath
-
-                val noteData = hashMapOf(
-                    "imageUrl" to savedPath
-                )
-                db.collection("notes")
-                    .add(noteData)
-
             }
         }
     }
+
 
     CommonScaffold("Thêm ghi chú", startAction = {
         IconButton(onClick = { navController.popBackStack() }) {
