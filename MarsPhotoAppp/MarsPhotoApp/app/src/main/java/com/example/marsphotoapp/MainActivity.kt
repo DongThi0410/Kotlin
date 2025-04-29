@@ -54,19 +54,13 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier.padding(p)) {
                         LazyColumn {
                             items(images) { image ->
-                                Text(
-                                    text = image.des,
-                                    style = TextStyle(
-                                        fontSize = 16.sp, fontStyle = FontStyle.Normal
-                                    ),
-                                    color = Color.Black,
-                                )
+
                                 Image(
                                     painter = rememberAsyncImagePainter(model = image.image_url),
                                     contentDescription = image.des,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(16.dp)
+                                        .padding(2.dp)
                                         .aspectRatio(2f / 3f)
                                         .clip(
                                             RoundedCornerShape(12.dp)
